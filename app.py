@@ -140,4 +140,36 @@ if submit_button:
             """,
         )
 
-    # @TODO: Provide user with car recomendation from the dataset
+    filtered_vehicles = cars_dataset[
+        (cars_dataset["Vehicle.Class"] == vehicle_class)
+        & (cars_dataset["CO2.Emissions.g.km."] < min(co2_pred * 0.9, co2_avg))
+    ]
+
+    # Choose few cars to recommend
+    n_max = 6
+    recommendations = filtered_vehicles.sample(n=min(n_max, len(filtered_vehicles)))
+
+    st.subheader(
+        "Vehicles recommendations in your car's category with lower CO₂ emission"
+    )
+
+    if not recommendations.empty:
+        cols = st.columns(2)  # 2 cards per row
+
+        for i, (_, row) in enumerate(recommendations.iterrows()):
+            with cols[i % 2]:
+                with st.container(border=True):
+                    st.markdown(f"### {row['Make']} {row['Model']}")
+                    st.metric("CO₂ emission", f"{row['CO2.Emissions.g.km.']} g/km")
+                    st.markdown(f"**Engine**: {row['Engine.Size.L.']} L")
+                    st.markdown(f"**Fuel type**: {code_to_fuel[row['Fuel.Type']]}")
+                    st.markdown("**Fuel consumption** (L/100km)")
+                    st.markdown(
+                        f"""
+                        | Combined | City | Highway |
+                        |----------|------|---------|
+                        | {row['Fuel.Consumption.Comb..L.100.km.']} | {row['Fuel.Consumption.City..L.100.km.']} | {row['Fuel.Consumption.Hwy..L.100.km.']} |
+                        """
+                    )
+    else:
+        st.info("We did not find any. Your car is pretty efficient 🙂")
