@@ -1,0 +1,3 @@
+Test MSE: 10.821890
+Test MAE: 2.353940
+R^2 score: 0.996948
