@@ -16,8 +16,17 @@ def load_preprocessor(path):
     return joblib.load(path)
 
 
+@st.cache_data
+def load_and_process_dataset(path):
+    df = pd.read_csv(path)
+    df = df.drop(columns=["Fuel.Consumption.Comb..mpg."])
+    avg_co2_by_class = df.groupby("Vehicle.Class")["CO2.Emissions.g.km."].mean()
+    return df, avg_co2_by_class
+
+
 model = load_co2_model("co2_model.keras")
 preprocessor = load_preprocessor("preprocessor.pkl")
+cars_dataset, avg_co2_by_class = load_and_process_dataset("CO2_Emissions.csv")
 
 Vehicle_classes = [
     "SUV - SMALL",
@@ -110,8 +119,25 @@ if submit_button:
 
     # Predict CO2
     co2_pred = model.predict(user_data_preprocessed)
+    co2_pred = co2_pred[0][0]
 
-    # @TODO: Compare emission to other cars within the given class
-    st.success(f"Predicted CO₂ emission: {co2_pred[0][0]:.0f} g/km")
+    # Display feedback
+    co2_avg = avg_co2_by_class[vehicle_class]
+
+    st.markdown("### Predicted CO₂ emission")
+    if co2_pred < co2_avg:
+        st.markdown(
+            f"""
+            ## ✅ {co2_pred:.0f} g/km
+            **Lower than the average for {vehicle_class} vehicles!**
+            """,
+        )
+    else:
+        st.markdown(
+            f"""
+            ## ⚠️ {co2_pred:.0f} g/km
+            **Higher than the average for {vehicle_class} vehicles!**
+            """,
+        )
 
     # @TODO: Provide user with car recomendation from the dataset
