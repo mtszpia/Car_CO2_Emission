@@ -86,10 +86,6 @@ with st.form(key="vehicle_form"):
 
     fuel_type_name = st.selectbox("Fuel Type", list(fuel_to_code.keys()))
 
-    fuel_consumption = st.number_input(
-        "Fuel Consumption (L/100km)", min_value=0.0, max_value=50.0, value=10.0
-    )
-
     submit_button = st.form_submit_button(label="Predict CO₂")
 
 
@@ -110,7 +106,6 @@ if submit_button:
                 "Cylinders": cylinders,
                 "Transmission": transmission_code,
                 "Fuel.Type": fuel_code,
-                "Fuel.Consumption.Comb..L.100.km.": fuel_consumption,
             }
         ]
     )
