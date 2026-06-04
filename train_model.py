@@ -60,6 +60,7 @@ def main():
             "Fuel.Consumption.Comb..mpg.",
             "Fuel.Consumption.City..L.100.km.",
             "Fuel.Consumption.Hwy..L.100.km.",
+            "Fuel.Consumption.Comb..L.100.km.",
         ]
     )
 
@@ -95,9 +96,11 @@ def main():
     input_dim = X_train_processed.shape[1]
     model = keras.Sequential(
         [
-            layers.Dense(128, activation="relu", input_shape=(input_dim,)),
-            layers.Dense(64, activation="relu"),
-            layers.Dense(32, activation="relu"),
+            layers.Dense(32, activation="relu", input_shape=(input_dim,)),
+            layers.Dense(16, activation="relu"),
+            layers.Dense(8, activation="relu"),
+            layers.Dense(4, activation="relu"),
+            layers.Dense(2, activation="relu"),
             layers.Dense(1),  # Regression output
         ]
     )
